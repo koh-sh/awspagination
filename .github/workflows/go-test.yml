@@ -27,6 +27,11 @@ jobs:
     - name: Install dependencies
       run: go get .
 
+    - name: Install testdata dependencies
+      run: |
+        cd testdata/src/test && go mod download && go mod vendor
+        cd ../testskip && go mod download && go mod vendor
+
     - name: Build
       run: go build -v
 
