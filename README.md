@@ -42,54 +42,55 @@ If a paginated API call is found without any pagination handling pattern in the 
 
 ### With golangci-lint
 
-There are two integration methods available:
+#### Module Plugin (Recommended)
 
-#### Method 1: Direct Integration (Recommended)
-
-Add to your `.golangci.yml`:
+**Step 1:** Create `.custom-gcl.yml` in your project root:
 
 ```yaml
-linters-settings:
-  custom:
-    awspagination:
-      path: github.com/koh-sh/awspagination
-      description: Detects missing pagination handling in AWS SDK v2 List API calls
-      original-url: https://github.com/koh-sh/awspagination
-  awspagination:
-    # Add custom pagination token field names (optional)
-    custom-fields:
-      - MyToken
-      - CustomNextToken
-    # Include test files in analysis (optional, default: false)
-    include-tests: false
+version: v2.6.2  # Use the same version as your golangci-lint installation
+plugins:
+  - module: github.com/koh-sh/awspagination
+    version: v0.0.1  # Or use the latest release version
+```
 
+To check your golangci-lint version:
+```bash
+golangci-lint version
+```
+
+**Step 2:** Build custom golangci-lint binary:
+
+```bash
+golangci-lint custom
+```
+
+**Step 3:** Add to your `.golangci.yml`:
+
+```yaml
 linters:
   enable:
     - awspagination
+  settings:
+    custom:
+      awspagination:
+        type: "module"
+        description: Detects missing pagination handling in AWS SDK v2 List API calls
+        settings:
+          # Add custom pagination token field names (optional)
+          custom-fields:
+            - MyToken
+            - CustomNextToken
+          # Include test files in analysis (optional, default: false)
+          include-tests: false
 ```
 
-#### Method 2: Module Plugin
+**Step 4:** Run the custom binary:
 
-Add to your `.golangci.yml`:
-
-```yaml
-linters-settings:
-  custom:
-    awspagination:
-      path: github.com/koh-sh/awspagination
-      type: "module"
-      description: Detects missing pagination handling in AWS SDK v2 List API calls
-      original-url: https://github.com/koh-sh/awspagination
-      settings:
-        custom-fields: ["MyToken", "CustomNextToken"]
-        include-tests: true
-
-linters:
-  enable:
-    - awspagination
+```bash
+./custom-gcl run
 ```
 
-**Note:** Both methods provide the same functionality. Method 1 (direct integration) is recommended for simplicity. Method 2 (module plugin) is useful if you need advanced plugin features.
+**Note:** The module plugin approach is recommended as it handles dependency management automatically and works across different environments without CGO requirements.
 
 ### As a standalone tool
 

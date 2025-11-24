@@ -178,11 +178,46 @@ The test package contains:
 
 ## golangci-lint Integration
 
-Key requirements for golangci-lint integration:
+### Integration Methods
+
+Two integration methods are available:
+
+1. **Module Plugin (Recommended)**: Uses `.custom-gcl.yml` and `golangci-lint custom` to build a custom binary
+2. **Go Plugin**: Requires building a `.so` file (more complex, environment-dependent)
+
+### Module Plugin Configuration
+
+**`.custom-gcl.yml`** structure:
+```yaml
+version: v2.6.2  # Must match golangci-lint version
+plugins:
+  - module: github.com/koh-sh/awspagination
+    version: v0.0.1  # Plugin version
+```
+
+**`.golangci.yml`** structure:
+```yaml
+linters:
+  enable:
+    - awspagination
+  settings:
+    custom:
+      awspagination:
+        type: "module"
+        description: Detects missing pagination handling in AWS SDK v2 List API calls
+        settings:
+          custom-fields: []  # Optional
+          include-tests: false  # Optional
+```
+
+**Important**: Configuration is under `linters.settings.custom`, NOT `linters-settings.custom`
+
+### Technical Requirements
+
 - Requires `LoadModeTypesInfo` for type checking
 - Exports `Analyzer` variable for integration
 - Uses `github.com/koh-sh/awspagination` import path
-- Configuration via `Analyzer.Flags` (already implemented)
+- Configuration via `Analyzer.Flags` (custom-fields, include-tests)
 
 ## Linter Scope and Limitations
 
